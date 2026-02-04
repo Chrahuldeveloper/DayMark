@@ -1,13 +1,12 @@
-import { ScreenContent } from 'components/ScreenContent';
-import { StatusBar } from 'expo-status-bar';
-
+import Choose from '@/screens/Choose';
 import './global.css';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
 
 export default function App() {
   return (
-    <>
-      <ScreenContent title="Home" path="App.tsx"></ScreenContent>
-      <StatusBar style="auto" />
-    </>
+    <SafeAreaView>
+      <Choose/>
+    </SafeAreaView>
   );
 }
