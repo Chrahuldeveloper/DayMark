@@ -6,7 +6,6 @@ import Choose from '@/screens/Choose';
 import Profile from '@/screens/Profile';
 import Wallpaper from '@/screens/Wallpaper';
 import { WallpaperContext } from './src/context/WallpaperContext'
-import { ProgressStyleContext } from './src/context/ProgressStyleContext'
 enableScreens();
 
 const Stack = createNativeStackNavigator();
@@ -16,7 +15,6 @@ export default function App() {
   return (
 
     <WallpaperContext>
-      <ProgressStyleContext>
         <NavigationContainer>
           <Stack.Navigator
             initialRouteName="Choose"
@@ -41,7 +39,6 @@ export default function App() {
             />
           </Stack.Navigator>
         </NavigationContainer>
-      </ProgressStyleContext>
     </WallpaperContext>
   );
 }

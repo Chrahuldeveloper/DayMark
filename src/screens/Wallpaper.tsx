@@ -2,9 +2,8 @@ import { View, Text, ImageBackground } from "react-native";
 import { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Svg, { Circle } from "react-native-svg";
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useWallpaper } from "../context/WallpaperContext";
-import { useProgressStyle } from "../context/ProgressStyleContext";
 
 interface TimeLine {
   year: number;
@@ -20,7 +19,28 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
 export default function Wallpaper() {
   const { wallpaper } = useWallpaper();
-  const { progress } = useProgressStyle();
+
+  const [currentWallpaper, setcurrentWallpaper] = useState<string | null>(null);
+
+  const [currentWallpaperStyle, setCurrentWallpaperStyle] =
+    useState<"Fade" | "Ring" | "Bar" | null>(null);
+
+  const getCurrentWallpaper = async () => {
+    try {
+      const getWallpaper = await AsyncStorage.getItem('currentWallpaper');
+      const getWallpaperStyle = await AsyncStorage.getItem("style")
+      console.log(getWallpaper)
+      console.log(getWallpaperStyle)
+      setcurrentWallpaper(getWallpaper as string)
+      setCurrentWallpaperStyle(getWallpaperStyle as any)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  useEffect(() => {
+    getCurrentWallpaper()
+  }, [])
 
   const [timeLine, settimeLine] = useState<TimeLine>({
     year: 0,
@@ -29,20 +49,20 @@ export default function Wallpaper() {
     date: 0,
   });
 
-  const percent = 10; 
+  const percent = 10;
 
   const strokeDashoffset =
     CIRCUMFERENCE - (CIRCUMFERENCE * percent) / 100;
 
   const getTimeLine = () => {
     const months = [
-      "January","February","March","April","May","June",
-      "July","August","September","October","November","December"
+      "January", "February", "March", "April", "May", "June",
+      "July", "August", "September", "October", "November", "December"
     ];
 
     const weeks = [
-      "Sunday","Monday","Tuesday","Wednesday",
-      "Thursday","Friday","Saturday"
+      "Sunday", "Monday", "Tuesday", "Wednesday",
+      "Thursday", "Friday", "Saturday"
     ];
 
     const date = new Date();
@@ -62,7 +82,7 @@ export default function Wallpaper() {
   return (
     <SafeAreaView>
       <ImageBackground
-        source={{ uri: wallpaper as any }}
+        source={{ uri: wallpaper as any || currentWallpaper }}
         className="w-screen h-screen"
         resizeMode="cover"
         blurRadius={2}
@@ -78,25 +98,24 @@ export default function Wallpaper() {
             </Text>
           </View>
 
-          <View className={`${progress.Ring ? "hidden" : ""} mt-16 items-center`}>
+          <View className={`${currentWallpaperStyle === "Ring" ? "hidden" : ""} mt-16 items-center`}>
             <Text className="text-white text-[96px] font-light">37</Text>
             <Text className="text-gray-400 text-sm mt-2">
               days into 2026
             </Text>
           </View>
 
-          {progress.Fade ? (
+          {currentWallpaperStyle === "Fade" ? (
             <View className="flex-row justify-center gap-2 mt-6">
               {Array.from({ length: 12 }).map((_, i) => (
                 <View
                   key={i}
-                  className={`w-2 h-2 rounded-full ${
-                    i < 2 ? "bg-blue-500" : "bg-gray-700"
-                  }`}
+                  className={`w-2 h-2 rounded-full ${i < 2 ? "bg-blue-500" : "bg-gray-700"
+                    }`}
                 />
               ))}
             </View>
-          ) : progress.Ring ? (
+          ) : currentWallpaperStyle === "Ring" ? (
             <View className="flex-row justify-center mt-10">
               <View className="items-center justify-center w-52 h-52">
 
@@ -109,7 +128,6 @@ export default function Wallpaper() {
                     strokeWidth={STROKE}
                     fill="none"
                   />
-
                   <Circle
                     cx={SIZE / 2}
                     cy={SIZE / 2}
@@ -136,7 +154,7 @@ export default function Wallpaper() {
 
               </View>
             </View>
-          ) : progress.Bar ? (
+          ) : currentWallpaperStyle === "Bar" ? (
             <View className="flex-row justify-center mt-6 px-10">
               <View className="w-full">
                 <View className="h-2 rounded-full bg-gray-700 overflow-hidden">
@@ -147,12 +165,11 @@ export default function Wallpaper() {
                 </View>
 
                 <View className="flex-row justify-between mt-2">
-                  {["J","F","M","A","M","J","J","A","S","O","N","D"].map((m, i) => (
+                  {["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"].map((m, i) => (
                     <Text
                       key={i}
-                      className={`text-[10px] font-semibold ${
-                        i < 2 ? "text-blue-400" : "text-gray-600"
-                      }`}
+                      className={`text-[10px] font-semibold ${i < 2 ? "text-blue-400" : "text-gray-600"
+                        }`}
                     >
                       {m}
                     </Text>
@@ -162,10 +179,10 @@ export default function Wallpaper() {
             </View>
           ) : null}
 
+
           <Text
-            className={`text-gray-500 text-xs text-center mt-5 ${
-              progress.Ring ? "hidden" : ""
-            }`}
+            className={`text-gray-500 text-xs text-center mt-5 ${currentWallpaperStyle === "Ring" ? "hidden" : ""
+              }`}
           >
             {percent}% complete
           </Text>

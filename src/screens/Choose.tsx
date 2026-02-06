@@ -12,6 +12,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import BottomBar from "@/components/BottomBar";
 import { useWallpaper } from "../context/WallpaperContext";
 import { useNavigation } from "@react-navigation/native";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Choose() {
   const { setWallpaper } = useWallpaper();
@@ -76,10 +77,16 @@ export default function Choose() {
               />
 
               <Pressable
-                onPress={() => {
-                  setWallpaper(selectedImage);
-                  setSelectedImage(null);
-                  navigation.navigate("Wallpaper");
+                onPress={ async () => {
+                  try {
+                    setWallpaper(selectedImage);
+                    await AsyncStorage.setItem("currentWallpaper",selectedImage)                    
+                    setSelectedImage(null);
+                    navigation.navigate("Wallpaper");
+                    
+                  } catch (error) {
+                    console.log(error)
+                  }
                 }}
                 className="bg-[#6784e4] w-40 mt-6 p-4 rounded-full"
               >
@@ -90,7 +97,6 @@ export default function Choose() {
             </ImageBackground>
           )}
         </Modal>
-
         <BottomBar page="Choose"/>
       </View>
     </SafeAreaView>

@@ -5,13 +5,13 @@ import { useState } from "react";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import BottomBar from "@/components/BottomBar";
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useProgressStyle } from '../context/ProgressStyleContext'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 export default function Profile() {
   const [reminders, setReminders] = useState(true);
-  
+
   const [progressStyle, setProgressStyle] = useState("Ring");
 
-  const { setProgress } = useProgressStyle()
 
   return (
     <SafeAreaView>
@@ -43,27 +43,27 @@ export default function Profile() {
                 {["Ring", "Bar", "Fade"].map((item) => (
                   <Pressable
                     key={item}
-                    onPress={() => {
-                      setProgressStyle(item)
+                    onPress={async () => {
+                      try {
+                        setProgressStyle(item)
 
-                      if (item === "Ring") {
-                        setProgress({
-                          Ring: true,
-                          Bar: false,
-                          Fade: false
-                        })
-                      } else if (item === "Bar") {
-                        setProgress({
-                          Ring: false,
-                          Bar: true,
-                          Fade: false
-                        })
-                      } else {
-                        setProgress({
-                          Ring: false,
-                          Bar: false,
-                          Fade: true
-                        })
+                        if (item === "Ring") {
+                          
+
+                          await AsyncStorage.setItem("style", "Ring")
+
+                        } else if (item === "Bar") {
+                          
+                          await AsyncStorage.setItem("style", "Bar")
+
+                        } else {
+                         
+                          await AsyncStorage.setItem("style", "Fade")
+
+                        }
+
+                      } catch (error) {
+                        console.log(error)
                       }
                     }
                     }
