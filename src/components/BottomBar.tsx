@@ -16,9 +16,9 @@ export default function BottomBar() {
           <Feather name="image" size={22} color="#9ca3af" />
         </Pressable>
 
-        <Pressable className="p-3">
+        {/* <Pressable className="p-3">
           <Feather name="calendar" size={22} color="#9ca3af" />
-        </Pressable>
+        </Pressable> */}
 
         <Pressable className="p-3 rounded-full bg-[#232840]">
           <Ionicons name="settings-outline" size={22} color="#6784e4" />
