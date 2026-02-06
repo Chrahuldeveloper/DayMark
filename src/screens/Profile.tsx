@@ -106,7 +106,7 @@ export default function Profile() {
           </View>
 
         </View>
-      <BottomBar />
+      <BottomBar page="Profile"/>
       </View>
     </SafeAreaView>
   );

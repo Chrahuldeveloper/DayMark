@@ -20,11 +20,11 @@ export default function Choose() {
 
   const images = [
     "https://images.pexels.com/photos/19786549/pexels-photo-19786549.jpeg",
-    "https://images.pexels.com/photos/19786549/pexels-photo-19786549.jpeg",
-    "https://images.pexels.com/photos/19786549/pexels-photo-19786549.jpeg",
-    "https://images.pexels.com/photos/19786549/pexels-photo-19786549.jpeg",
-    "https://images.pexels.com/photos/19786549/pexels-photo-19786549.jpeg",
+    "https://images.pexels.com/photos/11703240/pexels-photo-11703240.jpeg",
+    "https://images.pexels.com/photos/35901130/pexels-photo-35901130.jpeg",
+    "https://images.pexels.com/photos/1693095/pexels-photo-1693095.jpeg",
     "https://images.pexels.com/photos/35876738/pexels-photo-35876738.jpeg",
+    "https://images.pexels.com/photos/5566303/pexels-photo-5566303.jpeg"
   ];
 
   return (
@@ -91,7 +91,7 @@ export default function Choose() {
           )}
         </Modal>
 
-        <BottomBar />
+        <BottomBar page="Choose"/>
       </View>
     </SafeAreaView>
   );
