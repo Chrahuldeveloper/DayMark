@@ -1,6 +1,7 @@
 import { View, Text, ImageBackground } from "react-native";
 import BottomBar from "@/components/BottomBar";
 import { useEffect, useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 
 interface TimeLine {
@@ -11,7 +12,6 @@ interface TimeLine {
 }
 
 export default function Wallpaper() {
-
 
     const [timeLine, settimeLine] = useState<TimeLine>({
         year: 0,
@@ -46,14 +46,13 @@ export default function Wallpaper() {
             "Saturday"
         ];
 
-
         const date = new Date();
 
         const currentYear = date.getFullYear()
         const currentDate = date.getDate();
         const currentMonth = months[date.getMonth()];
         const currentDay = weeks[date.getDay()]
-        
+
         settimeLine({
             year: currentYear,
             day: currentDay,
@@ -72,63 +71,62 @@ export default function Wallpaper() {
         timeLine
     )
 
-
     return (
-        <ImageBackground
-            source={{
-                uri: "https://images.pexels.com/photos/19786549/pexels-photo-19786549.jpeg",
-            }}
-            className="w-screen h-screen"
-            resizeMode="cover"
-            blurRadius={2}
-        >
-            <View className="flex-1 bg-black/60">
+        <SafeAreaView>
+            <ImageBackground
+                source={{
+                    uri: "https://images.pexels.com/photos/19786549/pexels-photo-19786549.jpeg",
+                }}
+                className="w-screen h-screen"
+                resizeMode="cover"
+                blurRadius={2}
+            >
+                <View className="flex-1 bg-black/60">
 
-                <View className="mt-16 items-center">
-                    <Text className="text-white text-2xl font-semibold">{timeLine.year}</Text>
-                    <Text className="text-gray-400 text-sm mt-1">
-                        {timeLine.day}, {timeLine.month} {timeLine.day}
-                    </Text>
-                </View>
-
-                <View className="mt-16 items-center">
-                    <Text className="text-white text-[96px] font-light">37</Text>
-                    <Text className="text-gray-400 text-sm mt-2">
-                        days into 2026
-                    </Text>
-                </View>
-
-                <View className="flex-row justify-center gap-2 mt-6">
-                    {Array.from({ length: 12 }).map((_, i) => (
-                        <View
-                            key={i}
-                            className={`w-2 h-2 rounded-full ${i < 2 ? "bg-blue-500" : "bg-gray-700"
-                                }`}
-                        />
-                    ))}
-                </View>
-
-                <Text className="text-gray-500 text-xs text-center mt-3">
-                    10% complete
-                </Text>
-
-                <View className="flex-row gap-4 justify-center mt-8">
-                    <View className="px-4 py-2 rounded-full border border-gray-700">
-                        <Text className="text-blue-400 text-sm">
-                            37 days passed
+                    <View className="mt-24 items-center">
+                        <Text className="text-white text-2xl font-semibold">{timeLine.year}</Text>
+                        <Text className="text-gray-400 text-sm mt-1">
+                            {timeLine.day}, {timeLine.month} {timeLine.day}
                         </Text>
                     </View>
 
-                    <View className="px-4 py-2 rounded-full border border-gray-700">
-                        <Text className="text-blue-400 text-sm">
-                            328 days left
+                    <View className="mt-16 items-center">
+                        <Text className="text-white text-[96px] font-light">37</Text>
+                        <Text className="text-gray-400 text-sm mt-2">
+                            days into 2026
                         </Text>
                     </View>
+
+                    <View className="flex-row justify-center gap-2 mt-6">
+                        {Array.from({ length: 12 }).map((_, i) => (
+                            <View
+                                key={i}
+                                className={`w-2 h-2 rounded-full ${i < 2 ? "bg-blue-500" : "bg-gray-700"
+                                    }`}
+                            />
+                        ))}
+                    </View>
+
+                    <Text className="text-gray-500 text-xs text-center mt-3">
+                        10% complete
+                    </Text>
+
+                    <View className="flex-row gap-4 justify-center mt-8">
+                        <View className="px-4 py-2 rounded-full border border-gray-700">
+                            <Text className="text-blue-400 text-sm">
+                                37 days passed
+                            </Text>
+                        </View>
+
+                        <View className="px-4 py-2 rounded-full border border-gray-700">
+                            <Text className="text-blue-400 text-sm">
+                                328 days left
+                            </Text>
+                        </View>
+                    </View>
+
                 </View>
-
-            </View>
-
-            <BottomBar />
-        </ImageBackground>
+            </ImageBackground>
+        </SafeAreaView>
     );
 }

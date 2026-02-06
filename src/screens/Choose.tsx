@@ -8,6 +8,8 @@ import {
     ImageBackground
 } from "react-native";
 import { useState } from "react";
+import { SafeAreaView } from 'react-native-safe-area-context';
+import BottomBar from "@/components/BottomBar";
 
 export default function Choose() {
     const [selectedImage, setSelectedImage] = useState(null);
@@ -22,6 +24,7 @@ export default function Choose() {
     ];
 
     return (
+        <SafeAreaView>
         <View className="bg-black w-screen h-full">
             <View className="p-4">
                 <Text className="text-white text-2xl font-semibold">
@@ -71,6 +74,8 @@ export default function Choose() {
           </Pressable>
                 </ImageBackground>
             </Modal>
+        <BottomBar/>
         </View>
+         </SafeAreaView>
     );
 }
