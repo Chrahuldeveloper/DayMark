@@ -1,8 +1,7 @@
 import { View, Text, ImageBackground } from "react-native";
-import BottomBar from "@/components/BottomBar";
 import { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-
+import { useWallpaper } from '../context/WallpaperContext'
 
 interface TimeLine {
     year: number,
@@ -12,6 +11,11 @@ interface TimeLine {
 }
 
 export default function Wallpaper() {
+
+    const { wallpaper } = useWallpaper()
+
+    console.log(wallpaper)
+
 
     const [timeLine, settimeLine] = useState<TimeLine>({
         year: 0,
@@ -66,16 +70,11 @@ export default function Wallpaper() {
         getTimeLine()
     }, [])
 
-
-    console.log(
-        timeLine
-    )
-
     return (
         <SafeAreaView>
             <ImageBackground
                 source={{
-                    uri: "https://images.pexels.com/photos/19786549/pexels-photo-19786549.jpeg",
+                    uri: wallpaper as any,
                 }}
                 className="w-screen h-screen"
                 resizeMode="cover"
@@ -124,7 +123,6 @@ export default function Wallpaper() {
                             </Text>
                         </View>
                     </View>
-
                 </View>
             </ImageBackground>
         </SafeAreaView>

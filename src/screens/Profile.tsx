@@ -101,9 +101,7 @@ export default function Profile() {
                   </Text>
                 </View>
               </View>
-
               <AntDesign name="arrow-right" size={19} color="#6784e4" />
-
             </View>
           </View>
 

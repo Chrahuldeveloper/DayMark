@@ -5,7 +5,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Choose from '@/screens/Choose';
 import Profile from '@/screens/Profile';
 import Wallpaper from '@/screens/Wallpaper';
-
+import { WallpaperContext } from './src/context/WallpaperContext'
 enableScreens();
 
 const Stack = createNativeStackNavigator();
@@ -13,6 +13,7 @@ const Stack = createNativeStackNavigator();
 export default function App() {
 
   return (
+    <WallpaperContext>
     <NavigationContainer>
         <Stack.Navigator
           initialRouteName="Choose"
@@ -35,8 +36,8 @@ export default function App() {
             component={Profile}
             options={{ title: 'Profile' }}
           />
-
         </Stack.Navigator>
     </NavigationContainer>
+      </WallpaperContext>
   );
 }
