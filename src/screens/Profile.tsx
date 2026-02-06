@@ -5,10 +5,13 @@ import { useState } from "react";
 import AntDesign from '@expo/vector-icons/AntDesign';
 import BottomBar from "@/components/BottomBar";
 import { SafeAreaView } from 'react-native-safe-area-context';
-
+import { useProgressStyle } from '../context/ProgressStyleContext'
 export default function Profile() {
   const [reminders, setReminders] = useState(true);
+  
   const [progressStyle, setProgressStyle] = useState("Ring");
+
+  const { setProgress } = useProgressStyle()
 
   return (
     <SafeAreaView>
@@ -19,7 +22,7 @@ export default function Profile() {
             Customize your experience
           </Text>
 
-          <Text className="text-slate-400 mt-6 mb-3">Appearance</Text>
+          <Text className="text-slate-400 my-10 mb-3">Appearance</Text>
 
           <View className="bg-[#161617] rounded-2xl p-5 gap-5">
 
@@ -40,16 +43,39 @@ export default function Profile() {
                 {["Ring", "Bar", "Fade"].map((item) => (
                   <Pressable
                     key={item}
-                    onPress={() => setProgressStyle(item)}
+                    onPress={() => {
+                      setProgressStyle(item)
+
+                      if (item === "Ring") {
+                        setProgress({
+                          Ring: true,
+                          Bar: false,
+                          Fade: false
+                        })
+                      } else if (item === "Bar") {
+                        setProgress({
+                          Ring: false,
+                          Bar: true,
+                          Fade: false
+                        })
+                      } else {
+                        setProgress({
+                          Ring: false,
+                          Bar: false,
+                          Fade: true
+                        })
+                      }
+                    }
+                    }
                     className={`px-5 py-2 rounded-full ${progressStyle === item
-                        ? "bg-[#6784e4]"
-                        : "bg-[#212123]"
+                      ? "bg-[#6784e4]"
+                      : "bg-[#212123]"
                       }`}
                   >
                     <Text
                       className={`text-sm font-medium ${progressStyle === item
-                          ? "text-white"
-                          : "text-slate-400"
+                        ? "text-white"
+                        : "text-slate-400"
                         }`}
                     >
                       {item}
@@ -60,7 +86,7 @@ export default function Profile() {
             </View>
           </View>
 
-          <Text className="text-slate-400 mt-8 mb-3">Notifications</Text>
+          <Text className="text-slate-400 my-10 mb-3">Notifications</Text>
 
           <View className="bg-[#161617] rounded-2xl p-5">
             <View className="flex-row items-center justify-between">
@@ -85,8 +111,7 @@ export default function Profile() {
             </View>
           </View>
 
-
-          <Text className="text-slate-400 mt-8 mb-5">About</Text>
+          <Text className="text-slate-400 my-10 mb-5">About</Text>
 
           <View className="bg-[#161617] rounded-2xl p-5">
             <View className="flex-row items-center justify-between">
@@ -106,7 +131,7 @@ export default function Profile() {
           </View>
 
         </View>
-      <BottomBar page="Profile"/>
+        <BottomBar page="Profile" />
       </View>
     </SafeAreaView>
   );
