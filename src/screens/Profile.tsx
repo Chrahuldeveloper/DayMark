@@ -1,17 +1,37 @@
 import { Text, View, Switch, Pressable } from "react-native";
 import Feather from "@expo/vector-icons/Feather";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import { useState } from "react";
-import AntDesign from '@expo/vector-icons/AntDesign';
+import { useEffect, useState } from "react";
+import AntDesign from "@expo/vector-icons/AntDesign";
 import BottomBar from "@/components/BottomBar";
-import { SafeAreaView } from 'react-native-safe-area-context';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { SafeAreaView } from "react-native-safe-area-context";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Profile() {
   const [reminders, setReminders] = useState(true);
-
   const [progressStyle, setProgressStyle] = useState("Ring");
 
+  useEffect(() => {
+    const loadStyle = async () => {
+      try {
+        const savedStyle = await AsyncStorage.getItem("style");
+        if (savedStyle) setProgressStyle(savedStyle);
+      } catch (e) {
+        console.log(e);
+      }
+    };
+
+    loadStyle();
+  }, []);
+
+  const handleStyleChange = async (style: string) => {
+    try {
+      setProgressStyle(style);
+      await AsyncStorage.setItem("style", style);
+    } catch (e) {
+      console.log(e);
+    }
+  };
 
   return (
     <SafeAreaView>
@@ -25,7 +45,6 @@ export default function Profile() {
           <Text className="text-slate-400 my-10 mb-3">Appearance</Text>
 
           <View className="bg-[#161617] rounded-2xl p-5 gap-5">
-
             <View>
               <View className="flex-row gap-4 items-start mb-4">
                 <Ionicons name="ellipse-outline" size={24} color="#6784e4" />
@@ -43,39 +62,16 @@ export default function Profile() {
                 {["Ring", "Bar", "Fade"].map((item) => (
                   <Pressable
                     key={item}
-                    onPress={async () => {
-                      try {
-                        setProgressStyle(item)
-
-                        if (item === "Ring") {
-                          
-
-                          await AsyncStorage.setItem("style", "Ring")
-
-                        } else if (item === "Bar") {
-                          
-                          await AsyncStorage.setItem("style", "Bar")
-
-                        } else {
-                         
-                          await AsyncStorage.setItem("style", "Fade")
-
-                        }
-
-                      } catch (error) {
-                        console.log(error)
-                      }
-                    }
-                    }
+                    onPress={() => handleStyleChange(item)}
                     className={`px-5 py-2 rounded-full ${progressStyle === item
-                      ? "bg-[#6784e4]"
-                      : "bg-[#212123]"
+                        ? "bg-[#6784e4]"
+                        : "bg-[#212123]"
                       }`}
                   >
                     <Text
                       className={`text-sm font-medium ${progressStyle === item
-                        ? "text-white"
-                        : "text-slate-400"
+                          ? "text-white"
+                          : "text-slate-400"
                         }`}
                     >
                       {item}
@@ -118,9 +114,7 @@ export default function Profile() {
               <View className="flex-row gap-4 items-start">
                 <AntDesign name="exclamation-circle" size={24} color="#6784e4" />
                 <View>
-                  <Text className="text-white text-lg font-semibold">
-                    About
-                  </Text>
+                  <Text className="text-white text-lg font-semibold">About</Text>
                   <Text className="text-slate-400 text-sm mt-1">
                     Version 1.0.0
                   </Text>
@@ -129,8 +123,8 @@ export default function Profile() {
               <AntDesign name="arrow-right" size={19} color="#6784e4" />
             </View>
           </View>
-
         </View>
+
         <BottomBar page="Profile" />
       </View>
     </SafeAreaView>
