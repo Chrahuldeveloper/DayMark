@@ -1,9 +1,13 @@
-import { View, Text, ImageBackground } from "react-native";
-import { useEffect, useState } from "react";
+import { View, Text, ImageBackground, Pressable } from "react-native";
+import { useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Svg, { Circle } from "react-native-svg";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useWallpaper } from "../context/WallpaperContext";
+import { captureRef } from 'react-native-view-shot';
+import { NativeModules } from "react-native";
+
+const { WallpaperModule } = NativeModules;
 
 interface TimeLine {
   year: number;
@@ -12,6 +16,9 @@ interface TimeLine {
   date: number;
 }
 
+console.log("ALL MODULES:", NativeModules);
+console.log("WALLPAPER:", NativeModules.WallpaperModule);
+
 const SIZE = 208;
 const STROKE = 10;
 const RADIUS = (SIZE - STROKE) / 2;
@@ -19,28 +26,26 @@ const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
 export default function Wallpaper() {
   const { wallpaper } = useWallpaper();
-
+  const viewRef = useRef(null);
   const [currentWallpaper, setcurrentWallpaper] = useState<string | null>(null);
-
   const [currentWallpaperStyle, setCurrentWallpaperStyle] =
     useState<"Fade" | "Ring" | "Bar" | null>(null);
 
   const getCurrentWallpaper = async () => {
     try {
-      const getWallpaper = await AsyncStorage.getItem('currentWallpaper');
-      const getWallpaperStyle = await AsyncStorage.getItem("style")
-      console.log(getWallpaper)
-      console.log(getWallpaperStyle)
-      setcurrentWallpaper(getWallpaper as string)
-      setCurrentWallpaperStyle(getWallpaperStyle as any)
+      const getWallpaper = await AsyncStorage.getItem("currentWallpaper");
+      const getWallpaperStyle = await AsyncStorage.getItem("style");
+
+      setcurrentWallpaper(getWallpaper as string);
+      setCurrentWallpaperStyle(getWallpaperStyle as any);
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
-  }
+  };
 
   useEffect(() => {
-    getCurrentWallpaper()
-  }, [])
+    getCurrentWallpaper();
+  }, []);
 
   const [timeLine, settimeLine] = useState<TimeLine>({
     year: 0,
@@ -49,20 +54,15 @@ export default function Wallpaper() {
     date: 0,
   });
 
-  const percent = 10;
-
-  const strokeDashoffset =
-    CIRCUMFERENCE - (CIRCUMFERENCE * percent) / 100;
-
   const getTimeLine = () => {
     const months = [
       "January", "February", "March", "April", "May", "June",
-      "July", "August", "September", "October", "November", "December"
+      "July", "August", "September", "October", "November", "December",
     ];
 
     const weeks = [
       "Sunday", "Monday", "Tuesday", "Wednesday",
-      "Thursday", "Friday", "Saturday"
+      "Thursday", "Friday", "Saturday",
     ];
 
     const date = new Date();
@@ -79,10 +79,51 @@ export default function Wallpaper() {
     getTimeLine();
   }, []);
 
+  const today = new Date();
+  const startOfYear = new Date(today.getFullYear(), 0, 1);
+  const endOfYear = new Date(today.getFullYear(), 11, 31);
+
+  const oneDay = 1000 * 60 * 60 * 24;
+
+  const daysPassed =
+    Math.floor((today.getTime() - startOfYear.getTime()) / oneDay) + 1;
+
+  const totalDays =
+    Math.floor((endOfYear.getTime() - startOfYear.getTime()) / oneDay) + 1;
+
+  const daysRemaining = totalDays - daysPassed;
+  const percent = Math.floor((daysPassed / totalDays) * 100);
+
+  const strokeDashoffset =
+    CIRCUMFERENCE - (CIRCUMFERENCE * percent) / 100;
+
+
+  const handleSetWallpaper = async () => {
+    try {
+      const uri = await captureRef(viewRef, {
+        format: "png",
+        quality: 1,
+      });
+
+      console.log("Captured URI:", uri);
+
+      if (!WallpaperModule) {
+        console.log("WallpaperModule not linked");
+        return;
+      }
+
+      await WallpaperModule.setWallpaper(uri);
+
+      console.log("Wallpaper set successfully");
+    } catch (e) {
+      console.log("Wallpaper error:", e);
+    }
+  };
+
   return (
-    <SafeAreaView>
+    <SafeAreaView ref={viewRef}>
       <ImageBackground
-        source={{ uri: wallpaper as any || currentWallpaper }}
+        source={{ uri: (wallpaper as any) || currentWallpaper }}
         className="w-screen h-screen"
         resizeMode="cover"
         blurRadius={2}
@@ -98,10 +139,15 @@ export default function Wallpaper() {
             </Text>
           </View>
 
-          <View className={`${currentWallpaperStyle === "Ring" ? "hidden" : ""} mt-16 items-center`}>
-            <Text className="text-white text-[96px] font-light">37</Text>
+          <View
+            className={`${currentWallpaperStyle === "Ring" ? "hidden" : ""
+              } mt-16 items-center`}
+          >
+            <Text className="text-white text-[96px] font-light">
+              {daysPassed}
+            </Text>
             <Text className="text-gray-400 text-sm mt-2">
-              days into 2026
+              days into {timeLine.year}
             </Text>
           </View>
 
@@ -110,7 +156,9 @@ export default function Wallpaper() {
               {Array.from({ length: 12 }).map((_, i) => (
                 <View
                   key={i}
-                  className={`w-2 h-2 rounded-full ${i < 2 ? "bg-blue-500" : "bg-gray-700"
+                  className={`w-2 h-2 rounded-full ${i < Math.ceil((percent / 100) * 12)
+                    ? "bg-blue-500"
+                    : "bg-gray-700"
                     }`}
                 />
               ))}
@@ -118,7 +166,6 @@ export default function Wallpaper() {
           ) : currentWallpaperStyle === "Ring" ? (
             <View className="flex-row justify-center mt-10">
               <View className="items-center justify-center w-52 h-52">
-
                 <Svg width={SIZE} height={SIZE}>
                   <Circle
                     cx={SIZE / 2}
@@ -151,7 +198,6 @@ export default function Wallpaper() {
                     complete
                   </Text>
                 </View>
-
               </View>
             </View>
           ) : currentWallpaperStyle === "Bar" ? (
@@ -160,25 +206,29 @@ export default function Wallpaper() {
                 <View className="h-2 rounded-full bg-gray-700 overflow-hidden">
                   <View
                     className="h-full rounded-full bg-[#6784e4]"
-                    style={{ width: "10%" }}
+                    style={{ width: `${percent}%` }}
                   />
                 </View>
 
                 <View className="flex-row justify-between mt-2">
-                  {["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"].map((m, i) => (
-                    <Text
-                      key={i}
-                      className={`text-[10px] font-semibold ${i < 2 ? "text-blue-400" : "text-gray-600"
-                        }`}
-                    >
-                      {m}
-                    </Text>
-                  ))}
+                  {["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"].map(
+                    (m, i) => (
+                      <Text
+                        key={i}
+                        className={`text-[10px] font-semibold ${i <
+                          Math.ceil((today.getMonth() + 1))
+                          ? "text-blue-400"
+                          : "text-gray-600"
+                          }`}
+                      >
+                        {m}
+                      </Text>
+                    )
+                  )}
                 </View>
               </View>
             </View>
           ) : null}
-
 
           <Text
             className={`text-gray-500 text-xs text-center mt-5 ${currentWallpaperStyle === "Ring" ? "hidden" : ""
@@ -190,19 +240,28 @@ export default function Wallpaper() {
           <View className="flex-row gap-4 justify-center mt-12">
             <View className="px-4 py-2 rounded-full border bg-black/50 border-gray-800">
               <Text className="text-blue-400 text-sm font-semibold">
-                37 days passed
+                {daysPassed} days passed
               </Text>
             </View>
 
             <View className="px-4 py-2 rounded-full border bg-black/50 border-gray-800">
               <Text className="text-blue-400 text-sm font-semibold">
-                328 days left
+                {daysRemaining} days left
               </Text>
             </View>
           </View>
 
+          <View className="absolute bottom-3 w-full flex items-center">
+            <Pressable onPress={handleSetWallpaper} className="bg-[#6784e4] flex justify-center items-center w-40 my-6 p-4 rounded-full">
+              <Text className="text-white text-center text-sm font-semibold">
+                ✓ Set as Wallpaper
+              </Text>
+            </Pressable>
+          </View>
+
         </View>
       </ImageBackground>
+
     </SafeAreaView>
   );
 }
