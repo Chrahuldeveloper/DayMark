@@ -1,13 +1,11 @@
-import { View, Text, ImageBackground, Pressable } from "react-native";
+import { View, Text, ImageBackground, Pressable, Platform } from "react-native";
 import { useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Svg, { Circle } from "react-native-svg";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useWallpaper } from "../context/WallpaperContext";
 import { captureRef } from 'react-native-view-shot';
-import { NativeModules } from "react-native";
-
-const { WallpaperModule } = NativeModules;
+import * as IntentLauncher from "expo-intent-launcher";
 
 interface TimeLine {
   year: number;
@@ -15,9 +13,6 @@ interface TimeLine {
   month: string;
   date: number;
 }
-
-console.log("ALL MODULES:", NativeModules);
-console.log("WALLPAPER:", NativeModules.WallpaperModule);
 
 const SIZE = 208;
 const STROKE = 10;
@@ -107,12 +102,16 @@ export default function Wallpaper() {
 
       console.log("Captured URI:", uri);
 
-      if (!WallpaperModule) {
-        console.log("WallpaperModule not linked");
-        return;
-      }
 
-      await WallpaperModule.setWallpaper(uri);
+      if (Platform.OS === "android") {
+        await IntentLauncher.startActivityAsync(
+          "android.intent.action.SET_WALLPAPER",
+          {
+            data: uri,
+            flags: 1,
+          }
+        );
+      }
 
       console.log("Wallpaper set successfully");
     } catch (e) {
