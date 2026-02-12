@@ -4,7 +4,7 @@ import Ionicons from "@expo/vector-icons/Ionicons";
 import { useNavigation } from "@react-navigation/native";
 
 interface BottomBarProps {
-  page: "Wallpaper" | "Choose" | "Calendar" | "Profile";
+  page: "Wallpaper" | "Choose" | "Todo" | "Profile";
 }
 
 export default function BottomBar({ page }: BottomBarProps) {
@@ -36,10 +36,10 @@ export default function BottomBar({ page }: BottomBarProps) {
         </Pressable>
 
         <Pressable
-          onPress={() => navigation.navigate("Calendar")}
-          className={`p-3 rounded-full ${bgStyle("Calendar")}`}
+          onPress={() => navigation.navigate("Todo")}
+          className={`p-3 rounded-full ${bgStyle("Todo")}`}
         >
-          <Feather name="calendar" size={18} color={iconColor("Calendar")} />
+          <Feather name="calendar" size={18} color={iconColor("Todo")} />
         </Pressable>
 
         <Pressable

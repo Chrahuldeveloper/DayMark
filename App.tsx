@@ -6,6 +6,7 @@ import Choose from '@/screens/Choose';
 import Profile from '@/screens/Profile';
 import Wallpaper from '@/screens/Wallpaper';
 import { WallpaperContext } from './src/context/WallpaperContext'
+import Todo from '@/screens/Todo';
 enableScreens();
 
 const Stack = createNativeStackNavigator();
@@ -36,6 +37,11 @@ export default function App() {
               name="Profile"
               component={Profile}
               options={{ title: 'Profile' }}
+            />
+             <Stack.Screen
+              name="Todo"
+              component={Todo}
+              options={{ title: 'Todo' }}
             />
           </Stack.Navigator>
         </NavigationContainer>

@@ -1,11 +1,8 @@
-import { View, Text, ImageBackground, Pressable, Platform } from "react-native";
+import { View, Text, ImageBackground } from "react-native";
 import { useEffect, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Svg, { Circle } from "react-native-svg";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useWallpaper } from "../context/WallpaperContext";
-import { captureRef } from 'react-native-view-shot';
-import * as IntentLauncher from "expo-intent-launcher";
 
 interface TimeLine {
   year: number;
@@ -20,7 +17,6 @@ const RADIUS = (SIZE - STROKE) / 2;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
 export default function Wallpaper() {
-  const { wallpaper } = useWallpaper();
   const viewRef = useRef(null);
   const [currentWallpaper, setcurrentWallpaper] = useState<string | null>(null);
   const [currentWallpaperStyle, setCurrentWallpaperStyle] =
@@ -70,6 +66,7 @@ export default function Wallpaper() {
     });
   };
 
+
   useEffect(() => {
     getTimeLine();
   }, []);
@@ -92,37 +89,10 @@ export default function Wallpaper() {
   const strokeDashoffset =
     CIRCUMFERENCE - (CIRCUMFERENCE * percent) / 100;
 
-
-  const handleSetWallpaper = async () => {
-    try {
-      const uri = await captureRef(viewRef, {
-        format: "png",
-        quality: 1,
-      });
-
-      console.log("Captured URI:", uri);
-
-
-      if (Platform.OS === "android") {
-        await IntentLauncher.startActivityAsync(
-          "android.intent.action.SET_WALLPAPER",
-          {
-            data: uri,
-            flags: 1,
-          }
-        );
-      }
-
-      console.log("Wallpaper set successfully");
-    } catch (e) {
-      console.log("Wallpaper error:", e);
-    }
-  };
-
   return (
     <SafeAreaView ref={viewRef}>
       <ImageBackground
-        source={{ uri: (wallpaper as any) || currentWallpaper }}
+        source={{ uri: currentWallpaper as any }}
         className="w-screen h-screen"
         resizeMode="cover"
         blurRadius={2}
@@ -249,16 +219,25 @@ export default function Wallpaper() {
               </Text>
             </View>
           </View>
-
-          <View className="absolute bottom-3 w-full flex items-center">
-            <Pressable onPress={handleSetWallpaper} className="bg-[#6784e4] flex justify-center items-center w-40 my-6 p-4 rounded-full">
-              <Text className="text-white text-center text-sm font-semibold">
-                ✓ Set as Wallpaper
-              </Text>
-            </Pressable>
-          </View>
-
         </View>
+
+        <View className="absolute bottom-6 bg-black/50 border border-gray-800 p-3 rounded-xl mx-3">
+          <View className="flex  flex-row flex-wrap gap-1.5 ">
+            {Array.from({ length: totalDays }).map((i: any, index) => (
+              <View
+                key={index}
+              >
+                <Text
+                  key={index}
+                  className={`w-1.5  h-1.5 rounded-sm ${index + 1 < daysPassed ? "bg-green-500" : "bg-slate-500"} `}
+                >
+                  {index + 1}
+                </Text>
+              </View>
+            ))}
+          </View>
+        </View>
+
       </ImageBackground>
 
     </SafeAreaView>
