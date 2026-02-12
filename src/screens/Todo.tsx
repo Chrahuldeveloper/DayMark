@@ -53,7 +53,6 @@ export default function Todo() {
         const updatedTodos = todos.map(todo =>
             todo.id === id ? { ...todo, completed: !todo.completed } : todo
         );
-
         setTodos(updatedTodos);
         saveTodos(updatedTodos);
     };
@@ -126,8 +125,6 @@ export default function Todo() {
                             </View>
                         ))}
                     </ScrollView>
-
-
                     <BottomBar page="Todo" />
                 </View>
             </SafeAreaView>
