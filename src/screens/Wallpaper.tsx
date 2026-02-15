@@ -16,11 +16,57 @@ const STROKE = 10;
 const RADIUS = (SIZE - STROKE) / 2;
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS;
 
+type TodoType = {
+  id: string;
+  text: string;
+  completed: boolean;
+};
+
+
+
+
+
 export default function Wallpaper() {
   const viewRef = useRef(null);
   const [currentWallpaper, setcurrentWallpaper] = useState<string | null>(null);
   const [currentWallpaperStyle, setCurrentWallpaperStyle] =
     useState<"Fade" | "Ring" | "Bar" | null>(null);
+  const [getStreak, setGetStreak] = useState(0)
+  console.log(getStreak)
+
+  const getTodos = async () => {
+
+    try {
+      const storedTodos = await AsyncStorage.getItem("TODOS_STORAGE")
+      const todos: TodoType[] = storedTodos ? JSON.parse(storedTodos) : []
+      const isFinished = todos.length > 0 && todos.every(
+        (todo) => todo.completed === true
+      );
+
+      await AsyncStorage.setItem("streak", JSON.stringify(0))
+
+      if (isFinished) {
+
+        setGetStreak((prev) => prev + 1)
+        await AsyncStorage.setItem(
+          "streak",
+          JSON.stringify(getStreak + 1)
+        );
+
+      }
+
+    } catch (error) {
+
+      console.log(error)
+
+    }
+  }
+
+
+
+  useEffect(() => {
+    getTodos()
+  }, [])
 
   const getCurrentWallpaper = async () => {
     try {
@@ -88,6 +134,7 @@ export default function Wallpaper() {
 
   const strokeDashoffset =
     CIRCUMFERENCE - (CIRCUMFERENCE * percent) / 100;
+
 
   return (
     <SafeAreaView ref={viewRef}>
