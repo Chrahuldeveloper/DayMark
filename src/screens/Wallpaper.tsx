@@ -46,13 +46,11 @@ export default function Wallpaper() {
       await AsyncStorage.setItem("streak", JSON.stringify(0))
 
       if (isFinished) {
-
         setGetStreak((prev) => prev + 1)
         await AsyncStorage.setItem(
           "streak",
           JSON.stringify(getStreak + 1)
         );
-
       }
 
     } catch (error) {
@@ -270,18 +268,12 @@ export default function Wallpaper() {
 
         <View className="absolute bottom-6 bg-black/50 border border-gray-800 p-3 rounded-xl mx-3">
           <View className="flex  flex-row flex-wrap gap-1.5 ">
-            {Array.from({ length: totalDays }).map((i: any, index) => (
-              <View
-                key={index}
-              >
-                <Text
-                  key={index}
-                  className={`w-1.5  h-1.5 rounded-sm ${index + 1 < daysPassed ? "bg-green-500" : "bg-slate-500"} `}
-                >
-                  {index + 1}
-                </Text>
+            {Array.from({ length: getStreak }).map((_, index) => (
+              <View key={index}>
+                <View className="w-1.5 h-1.5 rounded-sm bg-green-500" />
               </View>
             ))}
+
           </View>
         </View>
 
